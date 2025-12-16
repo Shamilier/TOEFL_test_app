@@ -2,6 +2,7 @@ import Foundation
 import ScreenCaptureKit
 import Combine
 import OSLog
+import AppKit
 
 @MainActor
 final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
@@ -9,14 +10,11 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
     @Published var elapsed: TimeInterval = 0
     @Published var selectedDisplay: SCDisplay?
     @Published var availableDisplays: [SCDisplay] = []
-    @Published var statusMessage: String = "Idle"
+    @Published var statusMessage: String = "Ожидание"
     @Published var needsPermission: Bool = true
 
-    let settingsStore = SettingsStore()
-    let uploader = Uploader()
-
     private let captureService = CaptureService()
-    private var rotator: SegmentRotator?
+    private let streamer = StreamingClient()
     private var timer: Timer?
     private var startDate: Date?
     private let logger = Logger(subsystem: "com.backuprecorder.app", category: "model")
@@ -26,16 +24,17 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
         captureService.delegate = self
     }
 
-    func loadDisplays() async {
+    func prepare() async {
         do {
             try await captureService.requestPermissionIfNeeded()
             needsPermission = false
             availableDisplays = try await captureService.availableDisplays()
             selectedDisplay = availableDisplays.first
             if let display = selectedDisplay { captureService.setTarget(display: display) }
+            statusMessage = "Готов к стриму"
         } catch {
             needsPermission = true
-            statusMessage = "Permission required"
+            statusMessage = "Требуется разрешение"
         }
     }
 
@@ -45,48 +44,40 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
         statusMessage = "Target: \(display.displayName ?? "Display")"
     }
 
-    func startRecording(manual: Bool = true) async {
-        guard manual || settingsStore.settings.autoBackupEnabled else {
-            statusMessage = "Auto-backup disabled"
+    func startStreaming() async {
+        guard needsPermission == false else {
+            statusMessage = "Не хватает разрешений"
             return
         }
         guard let display = selectedDisplay else {
-            statusMessage = "Select a display"
+            statusMessage = "Нет доступного экрана"
             return
-        }
-
-        let moviesDirectory = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first!
-        let folder = moviesDirectory.appendingPathComponent("BackupRecorder", isDirectory: true)
-        rotator = SegmentRotator(baseDirectory: folder, segmentDuration: settingsStore.settings.segmentDuration, diskQuota: settingsStore.settings.diskQuotaBytes)
-        rotator?.onSegmentFinished = { [weak self] url in
-            guard let self else { return }
-            self.uploader.uploadIfNeeded(file: url, endpoint: self.settingsStore.settings.uploadEndpoint, enabled: self.settingsStore.settings.uploadEnabled)
         }
 
         do {
             captureService.setTarget(display: display)
             try await captureService.start()
-            try rotator?.startNewSegment(width: Int(display.width), height: Int(display.height))
+            streamer.startStreaming()
             startTimer()
             isRecording = true
-            statusMessage = "Recording"
-            LogStore.shared.write("Recording started on \(display.displayName ?? "display")")
+            statusMessage = "Стрим запущен"
+            LogStore.shared.write("Streaming started on \(display.displayName ?? "display")")
         } catch {
-            statusMessage = "Failed: \(error.localizedDescription)"
+            statusMessage = "Ошибка запуска: \(error.localizedDescription)"
             logger.error("Start failed: \(error.localizedDescription)")
         }
     }
 
-    func stopRecording() async {
+    func stopStreaming() async {
         do {
             try await captureService.stop()
-            _ = await rotator?.finishCurrentSegment()
+            streamer.stopStreaming()
             stopTimer()
             isRecording = false
-            statusMessage = "Stopped"
-            LogStore.shared.write("Recording stopped")
+            statusMessage = "Остановлено"
+            LogStore.shared.write("Streaming stopped")
         } catch {
-            statusMessage = "Stop failed: \(error.localizedDescription)"
+            statusMessage = "Ошибка остановки: \(error.localizedDescription)"
         }
     }
 
@@ -107,16 +98,18 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
 
     // MARK: CaptureServiceDelegate
     func captureService(_ service: CaptureService, didOutput sampleBuffer: CMSampleBuffer, type: SCStreamOutputType) {
-        rotator?.append(sampleBuffer, type: type)
+        streamer.push(sampleBuffer: sampleBuffer, type: type)
     }
 
     func captureService(_ service: CaptureService, didStopWith error: Error?) {
         Task { @MainActor in
             if let error {
-                self.statusMessage = "Capture error: \(error.localizedDescription)"
+                self.statusMessage = "Ошибка захвата: \(error.localizedDescription)"
                 LogStore.shared.write("Capture error: \(error.localizedDescription)")
             }
             self.isRecording = false
+            self.streamer.stopStreaming()
+            self.stopTimer()
         }
     }
 }
