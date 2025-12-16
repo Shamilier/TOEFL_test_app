@@ -20,9 +20,9 @@ struct TOEFL_test_appApp: App {
                 Button(model.isRecording ? "Stop" : "Start") {
                     Task {
                         if model.isRecording {
-                            await model.stopRecording()
+                            await model.stopStreaming()
                         } else {
-                            await model.startRecording(manual: true)
+                            await model.startStreaming()
                         }
                     }
                 }
