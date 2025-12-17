@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2730D89D2EF2C3070095FD2C /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2730D89C2EF2C3070095FD2C /* icon.icns */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2730D84C2EF199930095FD2C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		2730D83E2EF199920095FD2C /* TOEFL test app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TOEFL test app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2730D84B2EF199930095FD2C /* TOEFL test appTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TOEFL test appTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2730D8552EF199930095FD2C /* TOEFL test appUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TOEFL test appUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2730D89C2EF2C3070095FD2C /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -79,6 +84,7 @@
 				2730D84E2EF199930095FD2C /* TOEFL test appTests */,
 				2730D8582EF199930095FD2C /* TOEFL test appUITests */,
 				2730D83F2EF199920095FD2C /* Products */,
+				2730D89C2EF2C3070095FD2C /* icon.icns */,
 			);
 			sourceTree = "<group>";
 		};
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2730D89D2EF2C3070095FD2C /* icon.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,6 +401,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -413,14 +421,14 @@
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
-                                ENABLE_USER_SELECTED_FILES = readonly;
-                                GENERATE_INFOPLIST_FILE = YES;
-                                INFOPLIST_KEY_LSUIElement = YES;
-                                INFOPLIST_KEY_NSHumanReadableCopyright = "";
-                                LD_RUNPATH_SEARCH_PATHS = (
-                                        "$(inherited)",
-                                        "@executable_path/../Frameworks",
-                                );
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "HSE.TOEFL-test-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -445,6 +453,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -464,14 +473,14 @@
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
-                                ENABLE_USER_SELECTED_FILES = readonly;
-                                GENERATE_INFOPLIST_FILE = YES;
-                                INFOPLIST_KEY_LSUIElement = YES;
-                                INFOPLIST_KEY_NSHumanReadableCopyright = "";
-                                LD_RUNPATH_SEARCH_PATHS = (
-                                        "$(inherited)",
-                                        "@executable_path/../Frameworks",
-                                );
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "HSE.TOEFL-test-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
