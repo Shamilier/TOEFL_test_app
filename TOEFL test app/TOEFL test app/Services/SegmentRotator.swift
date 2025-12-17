@@ -1,5 +1,7 @@
 import Foundation
 import OSLog
+import ScreenCaptureKit
+
 
 final class SegmentRotator {
     private let logger = Logger(subsystem: "com.backuprecorder.app", category: "rotator")

@@ -1,5 +1,7 @@
 import AVFoundation
 import OSLog
+import ScreenCaptureKit
+
 
 final class RecordingWriter {
     private let logger = Logger(subsystem: "com.backuprecorder.app", category: "writer")

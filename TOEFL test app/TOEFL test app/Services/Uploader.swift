@@ -1,9 +1,11 @@
 import Foundation
 import OSLog
+import Combine
 
 final class Uploader: NSObject, URLSessionTaskDelegate, ObservableObject {
     private let logger = Logger(subsystem: "com.backuprecorder.app", category: "uploader")
     private var session: URLSession!
+
     @Published var lastUploadStatus: String = "Idle"
 
     override init() {

@@ -1,5 +1,6 @@
 import Foundation
 import os
+import Combine
 
 struct RecordingSettings: Codable, Equatable {
     var autoBackupEnabled: Bool
@@ -18,6 +19,7 @@ struct RecordingSettings: Codable, Equatable {
 }
 
 final class SettingsStore: ObservableObject {
+    
     private let logger = Logger(subsystem: "com.backuprecorder.app", category: "settings")
     private let storageKey = "backup.recorder.settings"
 

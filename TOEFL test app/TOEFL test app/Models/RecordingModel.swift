@@ -4,6 +4,27 @@ import Combine
 import OSLog
 import AppKit
 
+
+import AppKit
+import ScreenCaptureKit
+
+extension NSScreen {
+    var cgDisplayID: CGDirectDisplayID {
+        (deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)
+            .map { CGDirectDisplayID($0.uint32Value) } ?? 0
+    }
+}
+
+extension SCDisplay {
+    var friendlyName: String {
+        if let screen = NSScreen.screens.first(where: { $0.cgDisplayID == self.displayID }) {
+            return screen.localizedName
+        }
+        return "Display \(displayID)"
+    }
+}
+
+
 @MainActor
 final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
     @Published var isRecording: Bool = false
@@ -41,7 +62,9 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
     func updateDisplay(_ display: SCDisplay) {
         selectedDisplay = display
         captureService.setTarget(display: display)
-        statusMessage = "Target: \(display.displayName ?? "Display")"
+        statusMessage = "Target: \(display.friendlyName)"
+        LogStore.shared.write("Streaming started on \(display.friendlyName)")
+
     }
 
     func startStreaming() async {
@@ -61,7 +84,9 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
             startTimer()
             isRecording = true
             statusMessage = "Стрим запущен"
-            LogStore.shared.write("Streaming started on \(display.displayName ?? "display")")
+            statusMessage = "Target: \(display.friendlyName)"
+            LogStore.shared.write("Streaming started on \(display.friendlyName)")
+
         } catch {
             statusMessage = "Ошибка запуска: \(error.localizedDescription)"
             logger.error("Start failed: \(error.localizedDescription)")

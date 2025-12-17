@@ -37,7 +37,10 @@ final class StreamingClient {
             guard let self else { return }
             let ciImage = CIImage(cvImageBuffer: imageBuffer)
             guard let cgImage = self.ciContext.createCGImage(ciImage, from: ciImage.extent) else { return }
-            guard let bitmap = NSBitmapImageRep(cgImage: cgImage) else { return }
+            let bitmap = NSBitmapImageRep(cgImage: cgImage)
+            guard let data = bitmap.representation(using: .jpeg,
+                                                   properties: [.compressionFactor: 0.6]) else { return }
+
             guard let data = bitmap.representation(using: .jpeg, properties: [.compressionFactor: 0.6]) else { return }
 
             var request = URLRequest(url: self.endpoint)

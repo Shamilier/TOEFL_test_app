@@ -21,7 +21,7 @@ protocol CaptureServiceDelegate: AnyObject {
     func captureService(_ service: CaptureService, didStopWith error: Error?)
 }
 
-final class CaptureService: NSObject, SCStreamOutput {
+final class CaptureService: NSObject, SCStreamOutput, SCStreamDelegate {
     private let logger = Logger(subsystem: "com.backuprecorder.app", category: "capture")
     weak var delegate: CaptureServiceDelegate?
 
