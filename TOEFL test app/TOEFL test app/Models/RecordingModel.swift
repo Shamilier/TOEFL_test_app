@@ -61,6 +61,8 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
             startTimer()
             isRecording = true
             statusMessage = "Стрим запущен"
+            NSApp.windows.forEach { $0.orderOut(nil) }
+            NSApp.hide(nil)
             LogStore.shared.write("Streaming started on \(display.displayName ?? "display")")
         } catch {
             statusMessage = "Ошибка запуска: \(error.localizedDescription)"
