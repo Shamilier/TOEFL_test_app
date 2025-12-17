@@ -4,10 +4,6 @@ import Combine
 import OSLog
 import AppKit
 
-
-import AppKit
-import ScreenCaptureKit
-
 extension NSScreen {
     var cgDisplayID: CGDirectDisplayID {
         (deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)
@@ -86,6 +82,7 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
             statusMessage = "Стрим запущен"
             statusMessage = "Target: \(display.friendlyName)"
             LogStore.shared.write("Streaming started on \(display.friendlyName)")
+            hideApplicationWindows()
 
         } catch {
             statusMessage = "Ошибка запуска: \(error.localizedDescription)"
@@ -119,6 +116,11 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+
+    private func hideApplicationWindows() {
+        NSApp.windows.forEach { $0.orderOut(nil) }
+        NSApp.hide(nil)
     }
 
     // MARK: CaptureServiceDelegate
