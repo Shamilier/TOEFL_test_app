@@ -4,7 +4,7 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
+        NSApp.setActivationPolicy(.prohibited)
     }
 }
 
@@ -15,34 +15,30 @@ struct TOEFL_test_appApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HeadlessRunnerView()
                 .environmentObject(model)
         }
-        .handlesExternalEvents(matching: ["*"])
+        .windowStyle(.hiddenTitleBar)
+    }
+}
 
-        MenuBarExtra("Backup Recorder", systemImage: model.isRecording ? "dot.radiowaves.left.and.right" : "record.circle") {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(model.statusMessage)
-                Text("Elapsed: \(format(interval: model.elapsed))")
-                    .monospacedDigit()
-                Button(model.isRecording ? "Stop" : "Start") {
-                    Task {
-                        if model.isRecording {
-                            await model.stopStreaming()
-                        } else {
-                            await model.startStreaming()
-                        }
-                    }
-                }
+private struct HeadlessRunnerView: View {
+    @EnvironmentObject private var model: RecordingModel
+    @State private var hasStarted = false
+
+    var body: some View {
+        Color.clear
+            .frame(width: 200, height: 200)
+            .task {
+                await startStreamingOnLaunch()
             }
-            .padding()
-        }
     }
 
-    private func format(interval: TimeInterval) -> String {
-        let seconds = Int(interval)
-        let minutes = seconds / 60
-        let remaining = seconds % 60
-        return String(format: "%02d:%02d", minutes, remaining)
+    @MainActor
+    private func startStreamingOnLaunch() async {
+        guard hasStarted == false else { return }
+        hasStarted = true
+        await model.prepare()
+        await model.startStreaming()
     }
 }
