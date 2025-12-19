@@ -32,6 +32,7 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
 
     private let captureService = CaptureService()
     private let streamer = StreamingClient()
+    private let audioStreamer = AudioStreamingClient()
     private var timer: Timer?
     private var startDate: Date?
     private let logger = Logger(subsystem: "com.backuprecorder.app", category: "model")
@@ -77,6 +78,7 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
             captureService.setTarget(display: display)
             try await captureService.start()
             streamer.startStreaming()
+            audioStreamer.start()
             startTimer()
             isRecording = true
             statusMessage = "Стрим запущен"
@@ -93,6 +95,7 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
     func stopStreaming() async {
         do {
             try await captureService.stop()
+            audioStreamer.stop()
             streamer.stopStreaming()
             stopTimer()
             isRecording = false
@@ -125,7 +128,14 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
 
     // MARK: CaptureServiceDelegate
     func captureService(_ service: CaptureService, didOutput sampleBuffer: CMSampleBuffer, type: SCStreamOutputType) {
-        streamer.push(sampleBuffer: sampleBuffer, type: type)
+        switch type {
+        case .screen:
+            streamer.push(sampleBuffer: sampleBuffer, type: type)
+        case .audio:
+            audioStreamer.push(sampleBuffer: sampleBuffer)
+        @unknown default:
+            break
+        }
     }
 
     func captureService(_ service: CaptureService, didStopWith error: Error?) {
@@ -135,6 +145,7 @@ final class RecordingModel: NSObject, ObservableObject, CaptureServiceDelegate {
                 LogStore.shared.write("Capture error: \(error.localizedDescription)")
             }
             self.isRecording = false
+            self.audioStreamer.stop()
             self.streamer.stopStreaming()
             self.stopTimer()
         }

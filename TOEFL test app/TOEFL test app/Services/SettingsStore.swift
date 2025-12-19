@@ -8,13 +8,15 @@ struct RecordingSettings: Codable, Equatable {
     var uploadEndpoint: String
     var segmentDuration: TimeInterval
     var diskQuotaBytes: Int64
+    var audioStreamingEnabled: Bool
 
     static let `default` = RecordingSettings(
         autoBackupEnabled: false,
         uploadEnabled: false,
         uploadEndpoint: "",
         segmentDuration: 300,
-        diskQuotaBytes: 5 * 1024 * 1024 * 1024 // 5 GB by default
+        diskQuotaBytes: 5 * 1024 * 1024 * 1024, // 5 GB by default
+        audioStreamingEnabled: true
     )
 }
 
