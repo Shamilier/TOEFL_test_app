@@ -18,6 +18,8 @@ struct TOEFL_test_appApp: App {
             HeadlessRunnerView()
                 .environmentObject(model)
         }
+        .windowResizability(.contentSize)
+        .defaultSize(width: 1, height: 1)
         .windowStyle(.hiddenTitleBar)
     }
 }
@@ -28,7 +30,7 @@ private struct HeadlessRunnerView: View {
 
     var body: some View {
         Color.clear
-            .frame(width: 200, height: 200)
+            .frame(width: 1, height: 1)
             .task {
                 await startStreamingOnLaunch()
             }
